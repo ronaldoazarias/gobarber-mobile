@@ -8,6 +8,8 @@ import * as Yup from 'yup';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
 
+import { useAuth } from '../../hooks/auth';
+
 import getValidationErrors from '../../utils/getValidationErrors';
 
 import Input from '../../components/Input';
@@ -27,7 +29,12 @@ const SignIn: React.FC = () => {
     const passwordInputRef = useRef<TextInput>(null);
     const navigation = useNavigation();
 
+    const { signIn, user } = useAuth();
+
+    console.log(user);
+
     const handleSignIn = useCallback(async (data: SignInFormData) => {
+        console.log('foi');
         try {
             formRef.current?.setErrors({});
             
@@ -40,12 +47,12 @@ const SignIn: React.FC = () => {
                 abortEarly: true
             });
 
-            /*await signIn({
+            await signIn({
                 email: data.email,
                 password: data.password
             });
 
-            history.push('/dashboard');*/
+            //history.push('/dashboard');
             
         } catch (err) {
             if (err instanceof Yup.ValidationError) {                
@@ -60,7 +67,7 @@ const SignIn: React.FC = () => {
             );
 
         }
-    }, []);
+    }, [signIn]);
 
     return (
         <>
@@ -80,7 +87,7 @@ const SignIn: React.FC = () => {
                 <Title>Faça seu logon</Title>
             </View>
 
-            <Form onSubmit={handleSignIn}>
+            <Form ref={formRef} onSubmit={handleSignIn}>
                 <Input 
                     autoCorrect={false} 
                     autoCapitalize="none"
@@ -107,9 +114,9 @@ const SignIn: React.FC = () => {
                 />
             </Form>                
             
-            <Button onPress={() => { 
-                formRef.current?.submitForm();
-            }}>Entrar</Button>
+            <Button onPress={() => formRef.current?.submitForm()}>
+                Entrar
+            </Button>          
             
 
             <ForgotPassword>
